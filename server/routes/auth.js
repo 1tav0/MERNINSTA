@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken')
+const {JWT_KEY} = require('../keys')
 
 router.post('/signup', (req, res) => {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) { //since we dont want to procceed if we encounter this error we return 
+    if (!name || !email || !password) { //since we dont want to procceed if we encounter this error we return
         return res.status(422).json({ error: "Please add all the fields" });
     }
 
@@ -16,11 +18,11 @@ router.post('/signup', (req, res) => {
             User.findOne({ email: email })
             .then((savedUser) => {
                 if (savedUser) {
-                    res.status(422).json({ error: "User with the email already exits"})
+                    return res.status(422).json({ error: "User with the email already exits"})
                 }
                 const user = new User({
                     name,
-                    email, 
+                    email,
                     password: hashedpassword
                 })
 
@@ -35,8 +37,9 @@ router.post('/signup', (req, res) => {
         })
         .catch((error) => {
             console.log(error);
-        })   
+        })
 })
+
 
 
 router.post('/signin', (req, res) => {
@@ -52,7 +55,9 @@ router.post('/signin', (req, res) => {
             bcrypt.compare(password, savedUser.password)
                 .then((doMatch) => {
                     if (doMatch) {
-                        res.json({message: "Successfully signed in"})
+                        // res.json({message: "Successfully signed in"})
+                        const token = jwt.sign({ _id: savedUser._id }, JWT_KEY);
+                        res.json({ token: token });
                     } else {
                         return res.status(422).json({error: "Invalid Email or Password!"})
                     }
