@@ -1,0 +1,15 @@
+.home__img{
+  max-width: 400px;
+  object-fit: contain;
+}
+
+h5{
+  padding-top: 3px;
+  padding-left: 3px;
+}
+
+.home__card{
+  max-width: 400px;
+  height: max-content;
+  margin: 20px auto;
+}
