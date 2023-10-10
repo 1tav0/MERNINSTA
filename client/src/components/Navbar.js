@@ -8,7 +8,8 @@ const Navbar = () => {
       <ul id="nav-mobile" className="right">
         <li><Link to="/signin">Signin</Link></li>
         <li><Link to="/signup">SignUp</Link></li>
-        <li><Link to="/profile">Profile</Link></li>
+          <li><Link to="/profile">Profile</Link></li>
+          <li><Link to="/createpost">CreatePost</Link></li>
       </ul>
     </div>
   </nav>

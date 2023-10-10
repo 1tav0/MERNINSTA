@@ -7,7 +7,7 @@ const Home = () => {
       <div className="card home__card">
         <h5>Tavo</h5>
         <div className="card-image">
-          <img className='home__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
+          <img className='home__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='img__photo' />
         </div>
         <div className="card-content">
           <FavoriteBorderIcon />
