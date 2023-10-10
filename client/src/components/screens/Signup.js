@@ -29,7 +29,7 @@ const Signup = () => {
         })
       });
       const response = await request.json();
-      console.log(response);
+      //console.log(response);
       if (response.error) {
         M.toast({ html: response.error, classes: '#d50000 red accent-4' });
       } else {
