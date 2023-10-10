@@ -1,26 +1,41 @@
-import React, { useState } from 'react'
-import './Signup.css'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import './Signup.css';
+import { Link, useNavigate } from 'react-router-dom';
+import M from 'materialize-css';
+
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const uploadData = async () => {
+  const signUpData = async () => {
     try {
+      const mailformat = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+      if(!mailformat.test(email))
+      {
+          M.toast({html: "Invalid Email Address", classes: "#d50000 red accent-4"})
+          return;
+      }
       const request = await fetch("/signup", {
         method: "post",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name: "",
-          email: "",
-          password: ""
+          name,
+          email,
+          password
         })
       });
       const response = await request.json();
       console.log(response);
+      if (response.error) {
+        M.toast({ html: response.error, classes: '#d50000 red accent-4' });
+      } else {
+        M.toast({ html: response.message, classes: '#00c853 green accent-4' });
+        navigate('/signin')
+      }
     } catch (error) {
       console.log(error);
     }
@@ -54,7 +69,7 @@ const Signup = () => {
           }}
         />
         <button className="btn waves-effect waves-light #1e88e5 blue darken-1 signup__button"
-          onClick={()=>uploadData()}
+          onClick={()=>signUpData()}
         >SignUp
         </button>
         <h5>
