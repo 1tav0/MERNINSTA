@@ -12,10 +12,11 @@ const Signin = () => {
       const mailformat = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
       if(!mailformat.test(email))
       {
+        console.log('hello')
           M.toast({html: "Invalid Email Address", classes: "#d50000 red accent-4"})
           return;
       }
-      const request = fetch('/signin', {
+      const request = await fetch('/signin', {
         method: "post",
         headers: {
           "Content-Type": "application/json"
@@ -27,6 +28,7 @@ const Signin = () => {
       });
 
       const response = await request.json();
+      console.log(response);
       if (response.error) {
         M.toast({html: response.error, classes: "#d50000 red accent-4"})
       } else {
@@ -47,7 +49,7 @@ const Signin = () => {
           placeholder='email'
           value={email}
           onChange={event => {
-            setEmail(event.target.email);
+            setEmail(event.target.value);
           }}
         />
         <input
