@@ -9,7 +9,7 @@ const CreatePost = () => {
   const [image, setImage] = useState("");
   const [url, setUrl] = useState("");
   const Navigate = useNavigate()
-  //when url has been set successfully then we can create a post request
+  //when url has been set successfully then we can create a post request but only if url exists cuz useEffect mounts always when we refresh the page
   useEffect(() => {
     if (url) { //mounts everytime we refresh w/out this and must log in 
       async function fetchData() {
