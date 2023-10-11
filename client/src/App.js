@@ -15,7 +15,7 @@ const UserContext = createContext();
 //to access history outside Router
 const Routing = () => {
   const navigate = useNavigate();
-  //to access the 'state' and 'dispatch' function from the UserContext. aka read and update user-related data.
+  //to access the 'state' and dispatch function from the UserContext. aka read and update user-related data.
   const { state, dispatch } = useContext(UserContext);
   
   useEffect(() => {
