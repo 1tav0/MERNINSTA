@@ -29,9 +29,9 @@ const CreatePost = () => {
   
           const response = await request.json();
           if (response.error) {
-            M.toast({html: response.error, classes: ""})
+            M.toast({html: response.error, classes: "#d50000 red accent-4"})
           } else {
-            M.toast({ html: response.message, classes: "" });
+            M.toast({ html: "Created Post Successfully", classes: "#00c853 green accent-4" });
             Navigate('/');
           }
         } catch (error) {
@@ -45,6 +45,7 @@ const CreatePost = () => {
 
   const postDetails = async () => {
     try {
+      //may take a while to post to cloudinary and get url hence the useEffect with the if 
       const data = new FormData()
       data.append("file", image);
       data.append("upload_preset", "MERNINSTA")
@@ -54,7 +55,7 @@ const CreatePost = () => {
         body: data
       });
 
-      const response = request.json();
+      const response = await request.json();
       //console.log(response);
       setUrl(response.url);
     } catch (error) {

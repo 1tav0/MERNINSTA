@@ -12,9 +12,8 @@ const Signin = () => {
       const mailformat = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
       if(!mailformat.test(email))
       {
-        console.log('hello')
-          M.toast({html: "Invalid Email Address", classes: "#d50000 red accent-4"})
-          return;
+        M.toast({html: "Invalid Email Address", classes: "#d50000 red accent-4"})
+        return;
       }
       const request = await fetch('/signin', {
         method: "post",
