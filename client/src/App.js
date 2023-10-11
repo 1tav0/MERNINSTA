@@ -10,7 +10,7 @@ import { createContext, useReducer, useContext, useEffect } from 'react';
 import { reducer, initialState } from './reducers/userReducer'
 
 //used to provide & consume user-related data across different prts of app, for managing user authentication & sharing user info.
-const UserContext = createContext();
+export const UserContext = createContext();
 
 //to access history outside Router
 const Routing = () => {
@@ -21,7 +21,7 @@ const Routing = () => {
   useEffect(() => {
     //attempts to retrieve user data from the local storage. If user data is found, it dispatches an action of type "USER" with the user data as the payload.
     //If user data is not found, navigates to the "/signin" route, assuming that the user needs to sign in.
-    const user = JSON.parse(localStorage.getItem("User"));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       dispatch({ type: "USER", payload: user });
     } else {
