@@ -6,17 +6,17 @@ const Navbar = () => {
   const renderList = () => {
     if (state) {
       return [
-        <>
+        <ul id="nav-mobile" className="right" key="1">
           <li><Link to="/profile">Profile</Link></li>
           <li><Link to="/createpost">CreatePost</Link></li>
-        </>
+        </ul>
       ]
     } else {
       return [
-        <>
+        <ul id="nav-mobile" className="right" key="2">
           <li><Link to="/signin">Signin</Link></li>
           <li><Link to="/signup">SignUp</Link></li>
-        </>
+        </ul>
       ]
     }
   }
@@ -24,9 +24,7 @@ const Navbar = () => {
     <nav>
     <div className="nav-wrapper white">
       <Link to={state ? "/" : "/signing"} className="brand-logo left">Instagram</Link>
-      <ul id="nav-mobile" className="right">
         {renderList()}
-      </ul>
     </div>
   </nav>
   )
