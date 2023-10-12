@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './Profile.css';
 import Avatar from '@mui/material/Avatar';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { UserContext } from '../../App';
+
 const Profile = () => {
+  const [myposts, setMyposts] = useState([]);
+  const { state, dispatch } = useContext(UserContext);
+  console.log(state)
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const request = await fetch('/myposts', {
+          method: "Get",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("jwt")}`
+          }
+        });
+        const response = await request.json();
+        // console.log(response)
+        setMyposts(response.myposts);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData()
+  }, [])
+
+
   return (
     <div className='profile__wrapper'>
       <div className="profile__wrapper__child">
@@ -13,7 +39,7 @@ const Profile = () => {
         </div>
         <div className="profile__rightside">
           <div className="profile__top">
-            <span>tavo__username</span>
+            <span>{ state ? state.name : "loading..."}</span>
             <button>Edit Profile</button>
             <SettingsIcon />
           </div>
@@ -30,13 +56,13 @@ const Profile = () => {
         </div>
       </div>
       <div className="profile__gallery">
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
-          <img className='item__img' src='https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg' alt='photo' />
+        {
+          myposts.map(mypost => {
+            return (
+              <img className='item__img' src={mypost.photo} alt={mypost.title} key={ mypost._id } />
+            )
+          })
+        }
       </div>
     </div>
   )
