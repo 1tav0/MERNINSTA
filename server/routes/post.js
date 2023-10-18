@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Post = mongoose.model('Post');
 const requireLogin = require('../middleware/requireLogin');
+const { response } = require('express');
 
 router.get('/allposts', requireLogin, (req, res) => {
   Post.find()
@@ -58,8 +59,8 @@ router.put('/like', requireLogin, (req, res) => {
     new: true
   })
     .populate("postedBy", "_id name photo")
-    .then(result => {
-      res.json({ result });
+    .then(response => {
+      res.json(response);
     })
     .catch(err => {
       return res.status(422).json({ error: err });
@@ -74,13 +75,37 @@ router.put('/unlike', requireLogin, (req, res) => {
   }, {
     new: true
   })
-  .populate("postedBy", "_id name photo")
-  .then(result =>{
-    res.json({ result });
+    .populate("postedBy", "_id name photo")
+    .then(response => {
+      res.json(response);
+    })
+    .catch(err => {
+      return res.status(422).json({ error: err });
+    })
+});
+
+router.put('/comment', requireLogin, (req, res) => {
+  const comment = {
+    text: req.user.text,
+    postedBy: req.user._id
+  }
+
+  Post.findByIdAndUpdate(req.body.postId, {
+    $push: {
+      comments: comment
+    }
+  }, {
+    new: true
   })
-  .catch(err =>{
-    return res.status(422).json({ error: err });
-  })
-})
+    .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
+    .then(result => {
+      res.json(result);
+    })
+    .catch(err => {
+      res.status(422).json({ error: err });
+    })
+
+});
 
 module.exports = router;
