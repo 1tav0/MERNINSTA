@@ -44,12 +44,12 @@ const Home = () => {
       });
 
       const response = await request.json();
-      console.log(response)
+      // console.log(response)
       const newLikesArray = posts.map(post => {
         if (post._id === response._id) {
-          return response;
+          return { ...response, postedBy: response.postedBy, likes: response.likes, comments: post.comments }
         } else {
-          return post;
+          return { ...post, postedBy: post.postedBy, likes: post.likes, comments: post.comments }
         }
       })
 
@@ -73,12 +73,12 @@ const Home = () => {
       });
 
       const response = await request.json();
-      console.log(response)
+      // console.log(response)
       const newLikesArray = posts.map(post => {
         if (post._id === response._id) {
-          return response;
+          return { ...response, postedBy: response.postedBy, likes: response.likes, comments: post.comments }
         } else {
-          return post;
+          return { ...post, postedBy: post.postedBy, likes: post.likes, comments: post.comments }
         }
       })
 
@@ -88,7 +88,40 @@ const Home = () => {
     }
   }
 
- 
+  const makeComment = async (text,postId) => {
+    try {
+      const request = await fetch('/comment', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("jwt")}`
+        },
+        body: JSON.stringify({
+          text,
+          postId
+        })
+      })
+      const response = await request.json();
+      // Ensure the response structure matches the expected format
+      if (response.error) {
+        console.log(response.error);
+        return;
+      }
+      console.log(response);
+      const newData = posts.map(post => {
+        if (post._id === response._id) {
+          return response;
+        } else {
+          return post;
+        }
+      })
+
+      setPosts(newData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="home__wrapper">
       {
@@ -122,8 +155,32 @@ const Home = () => {
                 }
                 <h6>{ post.likes.length } likes</h6>
                 <h6>{ post.title }</h6>
-                <p>{ post.body }</p>
-                <input type='text' placeholder='add a comment' />
+                <p>{post.body}</p>
+                {/* When we make a comment */}
+                {
+                  post.comments.map(record => {
+                    return (
+                      <h6>
+                        <span>
+                          {record.postedBy.name}
+                        </span>
+                        <span>
+                          {record.text}
+                        </span>
+                      </h6>
+                    )
+                  })
+                }
+                <form
+                  onSubmit={e => {
+                    e.preventDefault()
+                    console.log(e.target[0].value)
+                    makeComment(e.target[0].value, post._id)
+                    e.target.reset()
+                  }}
+                >
+                  <input type='text' placeholder='add a comment' />
+                </form>
               </div>
             </div>
           )

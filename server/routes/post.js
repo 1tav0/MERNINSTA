@@ -86,7 +86,7 @@ router.put('/unlike', requireLogin, (req, res) => {
 
 router.put('/comment', requireLogin, (req, res) => {
   const comment = {
-    text: req.user.text,
+    text: req.body.text,
     postedBy: req.user._id
   }
 
@@ -99,8 +99,8 @@ router.put('/comment', requireLogin, (req, res) => {
   })
     .populate("postedBy", "_id name photo")
     .populate("comments.postedBy", "_id name photo")
-    .then(result => {
-      res.json(result);
+    .then(response => {
+      res.json(response);
     })
     .catch(err => {
       res.status(422).json({ error: err });
