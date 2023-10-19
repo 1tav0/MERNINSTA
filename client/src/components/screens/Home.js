@@ -103,13 +103,14 @@ const Home = () => {
         })
       })
       const response = await request.json();
-      // Ensure the response structure matches the expected format
+      // Ensure the response structure matches the expected format & theres no error in the server side
       if (response.error) {
         console.log(response.error);
         return;
       }
       // console.log(response);
       //Update the comment's "postedBy" object with the "photo" property
+      //map through the comments in the response & check if the user who posted the comment has a photo property. If not, it sets the user.photo to a default image ("/broken-image.jpg") ensuring that the user's photo is always defined.
       const updatedComments = response.comments.map(comment => {
         const user = comment.postedBy;
         if (!user.photo) {
@@ -117,7 +118,7 @@ const Home = () => {
         }
         return {...comment, postedBy: user}
       })
-
+      //maps through the posts and looks for the post that matches the given index and postId. When it finds the matching post, it updates the comments property of that post with the new comments from the response, & also updates the postedBy property to include user data.
       const newData = posts.map((post, i) => {
         if (i === index && post._id === response._id) {
           return {
@@ -131,7 +132,7 @@ const Home = () => {
           return post;
         }
       })
-
+      //called to update the state with the new data in newData, causing the component to re-render & display the updated data, including the new comment.
       setPosts(newData);
 
       if (inputRef.current[index]) {
@@ -209,7 +210,7 @@ const Home = () => {
                                     height: '25px',
                                     marginRight:'8px'
                                   }}
-                                  src={ post.comments[index].postedBy.pic }
+                                  src={ post.comments[index].postedBy.photo }
                               />
                               {record.postedBy.name}
                             </span>
