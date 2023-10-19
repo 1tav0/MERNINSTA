@@ -7,7 +7,9 @@ const { response } = require('express');
 
 router.get('/allposts', requireLogin, (req, res) => {
   Post.find()
-    .populate("postedBy", "_id name")
+    .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
+    .sort('-createdAt')//post created want to be at top not in order that is right now which is at bottom 
     .then(posts => {
       res.json({ posts });
     })
@@ -41,7 +43,8 @@ router.post('/createpost', requireLogin, (req, res) => {
 
 router.get('/myposts', requireLogin, (req, res) => {
   Post.find({ postedBy: req.user._id })
-    .populate("postedBy", "_id name")
+    .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
     .then(myposts => {
       res.json({ myposts });
     })
@@ -59,6 +62,7 @@ router.put('/like', requireLogin, (req, res) => {
     new: true
   })
     .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
     .then(response => {
       res.json(response);
     })
@@ -76,6 +80,7 @@ router.put('/unlike', requireLogin, (req, res) => {
     new: true
   })
     .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
     .then(response => {
       res.json(response);
     })
