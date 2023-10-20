@@ -142,7 +142,7 @@ router.delete('/deletepost/:postid', requireLogin, (req, res) => {
 
 router.delete('/deletecomment/:commentid', requireLogin, (req, res) => {
   Post.findOneAndUpdate({
-    "comments._id": req.params._id,
+    "comments._id": req.params.commentid,
     "comments.postedBy": req.user._id
   }, {
     $pull: {

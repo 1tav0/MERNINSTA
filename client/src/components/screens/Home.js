@@ -50,9 +50,19 @@ const Home = () => {
       // console.log(response)
       const newLikesArray = posts.map(post => {
         if (post._id === response._id) {
-          return { ...response, postedBy: response.postedBy, likes: response.likes, comments: post.comments }
+          return {
+            ...response,
+            postedBy: response.postedBy,
+            likes: response.likes,
+            comments: post.comments
+          }
         } else {
-          return { ...post, postedBy: post.postedBy, likes: post.likes, comments: post.comments }
+          return {
+            ...post,
+            postedBy: post.postedBy,
+            likes: post.likes,
+            comments: post.comments
+          }
         }
       })
 
@@ -79,9 +89,19 @@ const Home = () => {
       // console.log(response)
       const newLikesArray = posts.map(post => {
         if (post._id === response._id) {
-          return { ...response, postedBy: response.postedBy, likes: response.likes, comments: post.comments }
+          return {
+            ...response,
+            postedBy: response.postedBy,
+            likes: response.likes,
+            comments: post.comments
+          }
         } else {
-          return { ...post, postedBy: post.postedBy, likes: post.likes, comments: post.comments }
+          return {
+            ...post,
+            postedBy: post.postedBy,
+            likes: post.likes,
+            comments: post.comments
+          }
         }
       })
 
@@ -114,23 +134,43 @@ const Home = () => {
       //Update the comment's "postedBy" object with the "photo" property
       //map through the comments in the response & check if the user who posted the comment has a photo property. If not, it sets the user.photo to a default image ("/broken-image.jpg") ensuring that the user's photo is always defined.
       const updatedComments = response.comments.map(comment => {
+        //who posted the comment.
         const user = comment.postedBy;
         if (!user.photo) {
+          // It checks if the user has a `photo` property.
           user.photo = "/broken-image.jpg"
         }
-        return {...comment, postedBy: user}
+        return {
+          ...comment, // It spreads the properties of the original comment to preserve them.
+          postedBy: user // It updates the `postedBy` property with the user object (which may now contain the photo property).
+        }
       })
       //maps through the posts and looks for the post that matches the given index and postId. When it finds the matching post, it updates the comments property of that post with the new comments from the response, & also updates the postedBy property to include user data.
+      // This is essentially returning the post with the added comment and other updated properties.
       const newData = posts.map((post, i) => {
         if (i === index && post._id === response._id) {
+          // This condition checks if the current post is the one where a comment was added, and it's at the specified index.
+          // If so, it returns an updated post object with the following properties:
           return {
-            ...response, postedBy: response.postedBy, likes: response.likes, updatedComments
-          }// return updated record with user data included 
-        }else if (post._id === response._id) {
+            ...response,// Replace the entire post with the updated post information.
+            postedBy: response.postedBy,// Preserve the original postedBy.
+            likes: response.likes,// Preserve the original likes.
+            updatedComments// Add the updated comments to this post.
+          }
+          // This is returning the original post with updated comments.
+        } else if (post._id === response._id) {
+          // This condition checks if the current post matches the post where the comment was added but is not at the specified index.
+          // If so, it returns the original post with some updates.
           return {
-            ...post, postedBy: post.postedBy, likes: post.likes, comments: response.comments
-          }//return old record with user data included 
+            ...post,// Preserve the original post information.
+            postedBy: post.postedBy,
+            likes: post.likes,
+            comments: response.comments // Replace the comments array with the updated comments.
+          }
+          // This is essentially keeping the post as it is.
         } else {
+           // If neither of the above conditions matches, it's not the post where the comment was added.
+          // In this case, it returns the original post without any changes.
           return post;
         }
       })
@@ -163,6 +203,56 @@ const Home = () => {
       const newData = posts.filter(post => {
         return post._id !== response._id;
       })
+
+      setPosts(newData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const deleteComment = async (commentid) => {
+    try {
+      const request = await fetch(`/deletecomment/${commentid}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("jwt")}`
+        }
+      });
+
+      const response = await request.json();
+      if (response.error) {
+        console.log(response.error);
+        return;
+      }
+
+      const newData = posts.map(post => {
+        // If the current post's _id matches the response's _id, this is the post where the comment was deleted.
+        // You would want to return the updated post information.
+        if (post._id === response._id) {
+          return {
+            ...response,
+            postedBy: response.postedBy,
+            likes: response.likes
+          }
+        } else {
+          // If the current post's _id does not match the response's _id, this is not the post where the comment was deleted.
+          // You want to preserve the original post information but update its comments array.
+          return {
+            ...post,
+            comments: post.comments.map(comment => {
+              if (comment._id === commentid) {
+                //indicating that this comment should be removed.
+                return null;
+              } else {
+                //If the comment does not match the commentId, it's preserved.
+                return comment;
+              }
+            })
+            .filter(comment => comment != null)
+            //After mapping over the comments array and setting the deleted comment to null, this line filters out the null entries,
+          }
+        }
+      });
 
       setPosts(newData);
     } catch (error) {
@@ -275,6 +365,22 @@ const Home = () => {
                             <span>
                               {record.text}
                             </span>
+                          </span>
+                          <span>
+                            {
+                              record.postedBy._id === state._id
+                              &&
+                              <span className="delete__icon">
+                                <DeleteIcon
+                                  onClick={() => deleteComment(record._id)}
+                                  style={{
+                                    color: 'red',
+                                    float: "right",
+                                    cursor: 'pointer'
+                                  }}
+                                />
+                              </span>
+                            }
                           </span>
                         </h6>
                       </div>
