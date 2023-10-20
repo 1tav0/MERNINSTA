@@ -3,7 +3,9 @@ import './Home.css';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { UserContext } from '../../App'
-import { Avatar } from '@mui/material';
+import { Avatar, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -143,13 +145,69 @@ const Home = () => {
     }
   }
 
+  const deletePost = async (postid) => {
+    try {
+      console.log(postid);
+      const request = await fetch(`/deletepost/${postid}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("jwt")}`
+        }
+      });
+      const response = await request.json();
+      if (response.error) {
+        console.log(response.error);
+        return;
+      }
+
+      const newData = posts.filter(post => {
+        return post._id !== response._id;
+      })
+
+      setPosts(newData);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="home__wrapper">
       {
         posts && posts.map((post, index) => {
           return (
             <div className="card home__card" key={post._id}>
-              <h5>{post.postedBy.name}</h5>
+              <h5
+                style={{
+                  margin: "10px auto"
+                }}
+              >
+                {
+                  <Link to={
+                    post.postedBy._id !== state._id
+                      ?
+                      `/profile/${post.postedBy._id}`
+                      :
+                      "/profile"}
+                  >
+                    {post.postedBy.name}
+                  </Link>
+                }
+                {
+                  post.postedBy._id === state._id
+                    &&
+                    <IconButton
+                  onClick={() => {
+                    deletePost(post._id)
+                  }}
+                  style={{
+                    color: 'red',
+                    float: "right"
+                  }}
+                  >
+                    <DeleteIcon/>
+                  </IconButton>
+                }
+              </h5>
               <div className="card-image">
                 <img className='home__img' src={post.photo} alt='img__photo' />
               </div>

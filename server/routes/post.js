@@ -113,7 +113,7 @@ router.put('/comment', requireLogin, (req, res) => {
 
 });
 
-router.put('/deletepost/:postid', requireLogin, (req, res) => {
+router.delete('/deletepost/:postid', requireLogin, (req, res) => {
   Post.findOne({ _id: req.params.postid })
     .populate("postedBy", "_id name photo")
     .populate("comments.postedBy", "_id name photo")
@@ -128,16 +128,43 @@ router.put('/deletepost/:postid', requireLogin, (req, res) => {
           })
           .catch(err => {
             console.log(err);
-            res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ error: "Internal server error" });
           })
       } else {
-        res.status(401).json({error: "Unauthorized"})
+        return res.status(401).json({error: "Unauthorized"})
       }
     })
     .catch(err => {
       console.log(err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     })
+})
+
+router.delete('/deletecomment/:commentid', requireLogin, (req, res) => {
+  Post.findOneAndUpdate({
+    "comments._id": req.params._id,
+    "comments.postedBy": req.user._id
+  }, {
+    $pull: {
+      comments: {
+        _id: req.params.commentid
+      }
+    }
+  }, {
+    new:true
+  })
+  .populate("postedBy", "_id name photo")
+  .populate("comments.postedBy", "_id name photo")
+  .then(post =>{
+    if (!post) {
+      return res.status(422).json({ error: "Post not found" });
+    }
+    res.json(post);
+  })
+  .catch(err =>{
+    conosole.log(err);
+    res.status(422).json({error: "Internal server error"})
+  })
 })
 
 module.exports = router;
