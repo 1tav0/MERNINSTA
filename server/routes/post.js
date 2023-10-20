@@ -163,7 +163,7 @@ router.delete('/deletecomment/:commentid', requireLogin, (req, res) => {
   })
   .catch(err =>{
     conosole.log(err);
-    res.status(422).json({error: "Internal server error"})
+    return res.status(422).json({error: "Internal server error"})
   })
 })
 
