@@ -113,4 +113,31 @@ router.put('/comment', requireLogin, (req, res) => {
 
 });
 
+router.put('/deletepost/:postid', requireLogin, (req, res) => {
+  Post.findOne({ _id: req.params.postid })
+    .populate("postedBy", "_id name photo")
+    .populate("comments.postedBy", "_id name photo")
+    .then(post => {
+      if (!post) {
+        return res.status(422).json({error: "Post not found"})
+      }
+      if (post.postedBy._id.toString() === req.user._id.toString()) {
+        post.deleteOne()
+          .then(result => {
+            res.json(result);
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: "Internal server error" });
+          })
+      } else {
+        res.status(401).json({error: "Unauthorized"})
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Internal server error" });
+    })
+})
+
 module.exports = router;
