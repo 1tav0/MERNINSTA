@@ -35,6 +35,7 @@ const Home = () => {
   const likePost = async (id) => {
     try {
       console.log(id)
+      //makes an HTTP request to a route
       const request = await fetch("/like", {
         method: "Put",
         headers: {
@@ -45,20 +46,24 @@ const Home = () => {
           postId: id
         })
       });
-
+      //awaits the response from the server, then parses it as JSON.
       const response = await request.json();
       // console.log(response)
       const newLikesArray = posts.map(post => {
+        // If the current post's _id matches the response's _id, this is the post that was liked.
+        // It returns an updated post object with specific properties.
         if (post._id === response._id) {
           return {
-            ...response,
-            postedBy: response.postedBy,
-            likes: response.likes,
-            comments: post.comments
+            ...response,// Replace the entire post with the updated post information.
+            postedBy: response.postedBy,// preserve the updated postedBy
+            likes: response.likes,// Preserve the updated likes.
+            comments: post.comments// Preserve the original comments.
           }
         } else {
+          // If the current post's _id does not match the response's _id, this is not the post that was liked.
+          // It returns the original post data with 
           return {
-            ...post,
+            ...post, // Preserve the original post information.
             postedBy: post.postedBy,
             likes: post.likes,
             comments: post.comments
