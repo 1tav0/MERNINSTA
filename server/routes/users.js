@@ -31,3 +31,6 @@ router.get('/user/:userid', requireLogin, (req, res) => {
       return res.status(422).json({ error: "Error finding user" });
     })
 });
+
+
+module.exports = router

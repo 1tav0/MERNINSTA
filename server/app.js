@@ -8,10 +8,12 @@ const Post = require('./models/Post');
 
 const AuthRoutes = require('./routes/auth');
 const PostRoutes = require('./routes/post');
+const UsersRoutes = require('./routes/users');
 //middleWare
 app.use(express.json()); //placing matters this is to read data from req.body
 app.use(AuthRoutes);
-app.use(PostRoutes)
+app.use(PostRoutes);
+app.use(UsersRoutes);
 
 mongoose.connect(MongoUrl)
     .then(() => console.log("connected to db successfully"))
