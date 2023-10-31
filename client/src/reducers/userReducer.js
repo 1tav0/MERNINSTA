@@ -17,5 +17,13 @@ export const reducer = (state, action) => {
     return null;
   }
 
+  if (action.type === "UPDATE") {
+    return {
+      ...state,
+      followers: action.payload.followers, //append followers coming from action.payload
+      following: action.payload.following
+    }
+  }
+
   return state;
 }

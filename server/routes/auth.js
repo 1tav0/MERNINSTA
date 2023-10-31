@@ -11,7 +11,7 @@ const requireLogin = require('../middleware/requireLogin')
 //     res.send("hello user");
 // })
 
-router.post('/signup', requireLogin, (req, res) => {
+router.post('/signup', (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) { //since we dont want to procceed if we encounter this error we return
@@ -47,7 +47,7 @@ router.post('/signup', requireLogin, (req, res) => {
 
 
 
-router.post('/signin', requireLogin, (req, res) => {
+router.post('/signin', (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         res.status(422).json({error: "please add email or password"})
