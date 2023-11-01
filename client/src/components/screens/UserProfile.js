@@ -6,10 +6,10 @@ import { UserContext } from '../../App';
 import { useParams } from 'react-router-dom';
 const Profile = () => {
   const [userProfile, setUserProfile] = useState('');
-  const [follow, setFollow] = useState([]);
   const { state, dispatch } = useContext(UserContext);
   const { userid } = useParams();
-  const [showFollow, setShowFollow] = useState(state ? !state.following.includes(userid) : true)
+  // const [showFollow, setShowFollow] = useState( true);
+  const [showFollow, setShowFollow] = useState( state ? !state.following.includes(userid) : true)
   // console.log(state)
   useEffect(() => {
     try {
@@ -20,7 +20,7 @@ const Profile = () => {
           }
         });
         const response = await request.json();
-        // console.log(response);
+        //console.log(response);
         setUserProfile(response);
       }
       fetchData();
@@ -29,6 +29,9 @@ const Profile = () => {
     }
   }, [])
 
+  //1.It fetches data from the server to update the user's following and followers lists.
+  //2.It updates the global state using the dispatch function to ensure that other parts of your React application have access to this updated data.
+  //3.It updates the local state of the component using setUserProfile with the functional update pattern. This is where the new follower is added to the user's followers list, preserving the previous state's structure.
   useEffect(() => {
     setShowFollow(state && !state.following.includes(userid));
   },[state, userid])
@@ -48,22 +51,33 @@ const Profile = () => {
       const response = await request.json();
       // Check if user is already following the person they are trying to follow If the user is not already following the person they are trying to follow, we update the local state accordingly. If the user is already following the person, we do not update the local state. This should prevent the user from following the same person multiple times.
       // console.log(response);
-      dispatch({ type: "UPDATE", payload: { following: response.following, followers: response.followers } });
+      // Dispatch an action to UPDATE GLOBAL STATE
+      dispatch({
+        type: "UPDATE", payload: {
+          following: response.following,
+          followers: response.followers
+        }
+      });
+      // UPDATE the 'USER' DATA in LOCAL STORAGE.
       localStorage.setItem('user', JSON.stringify(response));
-      //functional update pattern, where the new state is calculated based on the previous state 
+      //passing state data in component tree
+      //we return a new array with the previous items and what we have in the input from the user
+      //functional update pattern, where the new state is calculated based on the previous state
       //this code effectively updates the component's state by creating a new state object.
+      // UPDATE COMPONENT's state using the functional update pattern.
       setUserProfile(prevState => {
         return {
-          ...prevState,//to create a shallow copy of the previous state. This is a common practice in React to ensure that you're not modifying the previous state directly. Instead, you create a new object that inherits all the properties of the previous state.
-          user: {
-            ...prevState.user,
+          ...prevState,//to CREATE A SHALLOW COPY of the previous state. This is a common practice in React to ensure that you're not modifying the previous state directly. Instead, you create a new object that inherits all the properties of the previous state.
+          user: { //update user
+            ...prevState.user, // CREATE A SHALLOW COPY of the previous user object.
             followers: [
-              ...prevState.user.followers,
-              response._id
+              ...prevState.user.followers,// Create a new array with the previous followers.
+              response._id// Add the new follower's ID to the array.
             ]
           }
         }
       })
+      setShowFollow(false);
     } catch (error) {
       console.log(error);
     }
@@ -71,7 +85,7 @@ const Profile = () => {
 
   const unFollowUser = async () => {
     try {
-      const request = fetch('/unfollow', {
+      const request = await fetch('/unfollow', {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +94,32 @@ const Profile = () => {
         body: JSON.stringify({
           unfollowid: userid
         })
+      });
+      const response = await request.json();
+      //UPDATE GLOBAL STATE
+      dispatch({
+        type: "UPDATE", payload: {
+          following: response.following,
+          followers: response.followers
+        }
       })
+      //UPDATE LOCAL STORAGE
+      localStorage.setItem('user', JSON.stringify(response));
+      //UPDATE COMPONENT STATE
+      //previous state of the component. It represents the state of the component before the update. 
+      setUserProfile(prevState => {
+        const newFollowers = prevState.user.followers.filter(item => item !== response._id);
+        //returns TRUE if != if == returns FALSE
+        //returns all the ids that dont match the response, the response id is filtered 
+        return {
+          ...prevState,
+          user: {
+            ...prevState.user,
+            followers: newFollowers
+          }
+        }
+      })
+      setShowFollow(true);
     } catch (error) {
       console.log(error);
     }

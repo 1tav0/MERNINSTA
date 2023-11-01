@@ -21,7 +21,7 @@ export const reducer = (state, action) => {
     return {
       ...state,
       followers: action.payload.followers, //append followers coming from action.payload
-      following: action.payload.following
+      following: action.payload.following,
     }
   }
 
