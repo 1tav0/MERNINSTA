@@ -9,13 +9,31 @@ router.get('/allposts', requireLogin, (req, res) => {
   Post.find()
     .populate("postedBy", "_id name photo")
     .populate("comments.postedBy", "_id name photo")
-    .sort('-createdAt')//post created want to be at top not in order that is right now which is at bottom 
+    .sort("-createdAt")//post created want to be at top not in order that is right now which is at bottom 
     .then(posts => {
       res.json({ posts });
     })
     .catch(err => {
       console.log(err);
     })
+})
+
+router.get('/followingposts', requireLogin, (req, res) => {
+  //if postedBy is in following array get the posts
+  Post.find({
+    postedBy: {
+      $in: req.user.following
+    }
+  })
+  .populate("postedBy", "_id name photo")
+  .populate("comments.postedBy", "_id name photo")
+  .sort("-createdAt")
+  .then(posts =>{
+    res.json({ posts });
+  })
+  .catch(error =>{
+    console.log(error);
+  })
 })
 
 router.post('/createpost', requireLogin, (req, res) => {

@@ -19,7 +19,7 @@ const Profile = () => {
           }
         });
         const response = await request.json();
-        // console.log(response)
+        console.log(response)
         setMyposts(response.myposts);
       } catch (error) {
         console.log(error);
@@ -44,12 +44,12 @@ const Profile = () => {
             <SettingsIcon />
           </div>
           <div className="profile__middle">
-            <span>80 posts</span>
-            <span>376 followers</span>
-            <span>300 following</span>
+            <span>{myposts.length} posts</span>
+            <span>{state && state.followers.length} followers</span>
+            <span>{state && state.following.length} following</span>
           </div>
           <div className="profile__bottom">
-            <span>tavo@gmail.com</span>
+            <span>{state && state.email}</span>
             <span>Software engineer</span>
             <span>www.octavio-cruz.com</span>
           </div>
