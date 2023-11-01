@@ -6,6 +6,7 @@ import Signin from './components/screens/Signin';
 import Signup from './components/screens/Signup';
 import CreatePost from './components/screens/CreatePost';
 import UserProfile from './components/screens/UserProfile';
+import SubscribedUserPosts from './components/screens/SubscribedUserPosts'
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { createContext, useReducer, useContext, useEffect } from 'react';
 import { reducer, initialState } from './reducers/userReducer'
@@ -38,6 +39,7 @@ const Routing = () => {
       <Route path="/signin" element={<Signin />} />
       <Route path="/createpost" element={<CreatePost />} />
       <Route path="/profile/:userid" element={<UserProfile />} />
+      <Route path="/followingposts" element={<SubscribedUserPosts />} />
     </Routes>
   )
 }

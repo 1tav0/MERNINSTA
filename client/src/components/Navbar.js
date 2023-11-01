@@ -15,6 +15,7 @@ const Navbar = () => {
         <ul id="nav-mobile" className="right" key="1">
           <li><Link to="/profile">Profile</Link></li>
           <li><Link to="/createpost">CreatePost</Link></li>
+          <li><Link to="/followingposts">Following</Link></li>
           <li>
             <button className="btn waves-effect waves-light #b71c1c red darken-4"
               onClick={() => logOut()}
