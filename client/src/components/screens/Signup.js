@@ -54,7 +54,8 @@ const Signup = () => {
         body: JSON.stringify({
           name,
           email,
-          password
+          password,
+          photo: url
         })
       });
       const response = await request.json();

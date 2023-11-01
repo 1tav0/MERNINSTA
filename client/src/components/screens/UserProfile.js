@@ -135,7 +135,7 @@ const Profile = () => {
               <div className="profile__picture">
                 <Avatar
                   sx={{ width: 100, height: 100 }}
-                  alt="title" src="https://assets.manutd.com/AssetPicker/images/0/0/10/126/687707/Legends-Profile_Cristiano-Ronaldo1523460877263.jpg" />
+                  alt="title" src={userProfile ? userProfile.user.photo : "/broken-image.jpg"} />
               </div>
               <div className="profile__rightside">
                 <div className="profile__top">
