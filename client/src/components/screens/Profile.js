@@ -7,7 +7,7 @@ import { UserContext } from '../../App';
 const Profile = () => {
   const [myposts, setMyposts] = useState([]);
   const { state, dispatch } = useContext(UserContext);
-  console.log(state)
+  // console.log(state)
   const [image, setImage] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef();
@@ -27,7 +27,7 @@ const Profile = () => {
           }
         });
         const response = await request.json();
-        console.log(response)
+        // console.log(response)
         setMyposts(response.myposts);
       } catch (error) {
         console.log(error);
@@ -50,7 +50,7 @@ const Profile = () => {
           });
   
           const response = await request.json();
-          console.log(response);
+          //console.log(response);
           const fetchPic = await fetch("/updatepic", {
             method: "Put",
             headers: {
@@ -61,8 +61,10 @@ const Profile = () => {
                 photo: response.url
             })
           })
-          localStorage.setItem('user', JSON.stringify({ ...state, photo: response.url }))
-          dispatch({ type: "UPDATEPHOTO", payload: response.url })
+          const fetchPicResponse = await fetchPic.json();
+          console.log(fetchPicResponse);
+          localStorage.setItem('user', JSON.stringify({ ...state, photo: fetchPicResponse.photo }))
+          dispatch({ type: "UPDATEPHOTO", payload: fetchPicResponse.photo })
         } catch (error) {
           console.log(error);
         }
