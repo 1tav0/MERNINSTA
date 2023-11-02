@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import './Profile.css';
 import Avatar from '@mui/material/Avatar';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -8,6 +8,14 @@ const Profile = () => {
   const [myposts, setMyposts] = useState([]);
   const { state, dispatch } = useContext(UserContext);
   console.log(state)
+  const [image, setImage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef();
+
+  //This programmatically triggers a click event on the hidden file input element. This has the effect of opening the file selection dialog for the user, even though the input is hidden from view.
+  const handleEditImageClick = () => {
+    fileInputRef.current.click();// Trigger the file input click when the "Edit Image" button is clicked
+  }
   useEffect(() => {
     async function fetchData() {
       try {
@@ -28,7 +36,46 @@ const Profile = () => {
     fetchData()
   }, [state])
 
+  useEffect(() => {
+    if (image) {
+      async function fetchData() {
+        try {
+          const data = new FormData();
+          data.append("file", image);
+          data.append("upload_preset", "MERNINSTA")
+          data.append("cloud_name", "dcwdnswai")
+          const request = await fetch("https://api.cloudinary.com/v1_1/dcwdnswai/image/upload", {
+            method: "post",
+            body: data
+          });
+  
+          const response = await request.json();
+          console.log(response);
+          const fetchPic = await fetch("/updatepic", {
+            method: "Put",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization" : `Bearer ${localStorage.getItem("jwt")}`
+            },
+            body: JSON.stringify({
+                photo: response.url
+            })
+          })
+          localStorage.setItem('user', JSON.stringify({ ...state, photo: response.url }))
+          dispatch({ type: "UPDATEPHOTO", payload: response.url })
+        } catch (error) {
+          console.log(error);
+        }
+        setIsUploading(false)
+      }
+      fetchData();
+    }
+  }, [image])
 
+  const updatePhoto = (file) => {
+    setImage(file);
+    setIsUploading(true);
+  }
   return (
     <div className='profile__wrapper'>
       <div className="profile__wrapper__child">
@@ -39,8 +86,30 @@ const Profile = () => {
         </div>
         <div className="profile__rightside">
           <div className="profile__top">
-            <span>{ state ? state.name : "loading..."}</span>
-            <button>Edit Profile</button>
+            <span>{state ? state.name : "loading..."}</span>
+              {
+                isUploading 
+                ? 
+                (
+                    <div className="progress">
+                        <div className="indeterminate"></div>
+                    </div>
+                            
+                ) 
+                : 
+                (
+                  <div className="btn #1e88e5 blue darken-1 custom__button" onClick={handleEditImageClick}>
+                    <span>Edit Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      style={{display: "none"}}
+                      onChange={e => updatePhoto(e.target.files[0])}
+                    />
+                  </div>
+                )
+              }
             <SettingsIcon />
           </div>
           <div className="profile__middle">
